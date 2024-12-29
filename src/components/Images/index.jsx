@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Results from '../Results/Result';
+import { getResponseApi } from '../../utils/api';
 import './styles.css';
-import Loading from '../Loading';
 
 const API_KEY = import.meta.env.VITE_ACCESS_KEY;
 const defaultParams = `client_id=${API_KEY}`;
@@ -10,29 +10,31 @@ export default function GetImages() {
   const [word, setWord] = useState('');
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [Data, setData] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
-    setIsLoading(true);
-    setData(null);
     e.preventDefault();
-    const response = await fetch(`https://api.unsplash.com/search/photos?query=${word}&${defaultParams}&per_page=50`);
+    setIsLoading(true);
 
-    if (!response.ok) {
-      console.log("fetch error");
+    try {
+      const receivedImages = await getResponseApi(word);
+      
+      setImages(receivedImages);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setIsLoading(false);
     }
+  }
+  
+  function searchWord(e) {
+    setWord(e.target.value);
+  }
 
-    const data = await response.json();
-    setImages(data.results);
-    setData();
-}
-
-function searchWord(e) {
-  setWord(e.target.value);
-}
   return (
     <div>
-      <form onSubmit = {handleSubmit}>
+      {isLoading && ( <div>Loading..</div>)}
+      <form onSubmit={(e) => {handleSubmit(e)}}>
         <label>
           <input id="search-bar"
             type='text'
@@ -45,10 +47,11 @@ function searchWord(e) {
         <input type='submit' id="submit-button" />
       </form>
     <div className='result-images'>
-      {images.map((image) => (
+      {!isLoading && images.map((image) => (
         <Results key={image.id} {...image}/>
       ))}
     </div>
+    {error && (<span>{error}</span>)}
   </div>
   );
 }
