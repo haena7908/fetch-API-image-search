@@ -14,3 +14,5 @@ async function responseApi() {
     console.log("error", error);
   }
 }
+
+export default responseApi;
