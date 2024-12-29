@@ -1,0 +1,21 @@
+
+#search-bar {
+  width: 400px;
+  height: 31px;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1.5px solid rgb(228, 227, 225);
+  margin-bottom: 10%;
+
+}
+
+#submit-button {
+  display: none;
+}
+
+.result-images {
+  flex-wrap: wrap;
+  display: flex;
+  gap: 20px;
+}
